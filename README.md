@@ -6,7 +6,7 @@ An AI automation tool that generates viral-worthy videos using Google's VEO3 mod
 
 **Check this crazy alien short I made 🚀**
 
-![veo3](https://github.com/user-attachments/assets/7de816da-dcda-45b8-8aaf-0f35ec56944f)
+https://github.com/user-attachments/assets/7de816da-dcda-45b8-8aaf-0f35ec56944f
 
 ## Features
 
