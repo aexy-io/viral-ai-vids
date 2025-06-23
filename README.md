@@ -1,10 +1,10 @@
 # VEO3 Viral Videos Generator
 
-### 👉 ** READ MORE [Turn Any Topic Into Viral AI Videos Using Google's VEO3 Model!](https://dev.to/kaymen99/turn-any-topic-into-viral-ai-videos-using-googles-veo3-model-c03)**  
+### 👉 **READ MORE [Turn Any Topic Into Viral AI Videos Using Google's VEO3 Model!](https://dev.to/kaymen99/turn-any-topic-into-viral-ai-videos-using-googles-veo3-model-c03)**  
 
 An AI automation tool that generates viral-worthy videos using Google's VEO3 model. This project allows you to automatically create high-quality, realistic AI videos from any topic.
 
-**Check this crazy alien short I made 🚀**
+**Check this crazy alien short I made 🚀 (and I'm not an artist at all!)**
 
 https://github.com/user-attachments/assets/7de816da-dcda-45b8-8aaf-0f35ec56944f
 
