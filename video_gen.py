@@ -27,13 +27,12 @@ def start_video_generation(prompt: str):
             arguments=arguments
         )
         
-        result = {"request_id": handler.request_id, "status": "submitted"}
-        print(f"Successfully submitted to FAL. Request ID: {result['request_id']}")
-        return result
+        print(f"Successfully submitted to FAL. Request ID: {handler.request_id}")
+        return handler.request_id
     
     except Exception as e:
         print(f"Error submitting to FAL: {str(e)}")
-        return {"error": str(e), "status": "failed"}
+        return None
 
 
 def get_video_status(request_id: str):

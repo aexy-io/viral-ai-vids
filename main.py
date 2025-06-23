@@ -85,19 +85,19 @@ async def run_workflow(topic: str, count: int = 1):
             
             # Log the initial entry and get the row index
             row_index = log_to_excel(log_entry)
+            print(f"Log entry created with index: {row_index}")
             
             # Step 3: Submit to fal.ai 
-            submission = start_video_generation(prompt)
+            request_id = "7a6836f4-e187-4577-94e1-3d59a93d42c6"
+            # request_id = start_video_generation(prompt)
             
-            if not submission or isinstance(submission, dict) and "error" in submission:
-                error_msg = submission.get("error", "Unknown error during submission") if isinstance(submission, dict) else "Failed to get request ID"
+            if not request_id:
                 log_entry['status'] = "failed"
-                log_entry['error'] = error_msg
+                log_entry['error'] = "Failed to get request ID"
                 # Update the existing row with error information
                 log_to_excel(log_entry, row_index)
                 return None
             
-            request_id = submission
             log_entry['request_id'] = request_id
             
             # Update the log with request ID
