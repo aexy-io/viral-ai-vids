@@ -50,7 +50,7 @@ def log_to_excel(data, row_index=None):
     else:
         df = pd.DataFrame(columns=[
             'idea', 'caption', 'environment', 'prompt',
-            'status', 'request_id', 'video_url', 'error', 'created_at'
+            'status', 'task_id', 'video_url', 'error', 'created_at'
         ])
     
     if row_index is not None and 0 <= row_index < len(df):

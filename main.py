@@ -2,7 +2,7 @@ import os
 import asyncio
 from dotenv import load_dotenv
 from pydantic import BaseModel
-from video_gen import start_video_generation, wait_for_v3_completion
+from video_gen import start_video_generation, wait_for_completion
 from utils import log_to_excel, ainvoke_llm, get_current_date
 from prompts import GENERATE_IDEAS_PROMPT, GENERATE_VIDEO_SCRIPT_PROMPT
 
@@ -87,37 +87,32 @@ async def run_workflow(topic: str, count: int = 1):
             row_index = log_to_excel(log_entry)
             print(f"Log entry created with index: {row_index}")
             
-            # Step 3: Submit to fal.ai 
-            request_id = "7a6836f4-e187-4577-94e1-3d59a93d42c6"
-            # request_id = start_video_generation(prompt)
+            # Step 3: Submit to kie.ai
+            taskid = start_video_generation(prompt)
             
-            if not request_id:
+            if not taskid:
                 log_entry['status'] = "failed"
                 log_entry['error'] = "Failed to get request ID"
                 # Update the existing row with error information
                 log_to_excel(log_entry, row_index)
                 return None
             
-            log_entry['request_id'] = request_id
+            log_entry['task_id'] = taskid
             
             # Update the log with request ID
             log_to_excel(log_entry, row_index)
             
             # Step 4: Wait for completion
-            result = wait_for_v3_completion(request_id)
+            result = wait_for_completion(taskid)
             
             # Step 5: Update status and log results
-            if "error" in result:
+            if result.get("status") == "failed":
                 log_entry['status'] = "failed"
-                log_entry['error'] = result['error']
+                log_entry['error'] = result.get("error", "Unknown error")
             else:
                 log_entry['status'] = "completed"
-                video_url = result.get("video_url", "")
-                if not video_url and "output" in result:
-                    if isinstance(result["output"], dict) and "video_url" in result["output"]:
-                        video_url = result["output"]["video_url"]
-                        
-                log_entry['video_url'] = video_url
+                video_url = result.get("response", {}).get("resultUrls", [])
+                log_entry['video_url'] = video_url[0] if video_url else ""
                 print(f"Video URL: {video_url}")
             
             # Step 6: Update the Excel log with final results
@@ -129,7 +124,7 @@ async def run_workflow(topic: str, count: int = 1):
 
 async def main():
     # You can configure this to run on a schedule
-    topic = "Alien comedian roasting humans for trusting AI"  # Example topic
+    topic = "meteorologist woman chasing tornado live on air"  # Example topic
     
     # Number of ideas/videos to generate
     count = 1
@@ -142,12 +137,14 @@ if __name__ == "__main__":
     # Load environment variables from .env file
     load_dotenv()
     
-    # Check if FAL_KEY environment variable is set
-    if not os.environ.get("FAL_KEY"):
-        print("Warning: FAL_KEY environment variable not set")
+    # Check if KIE_API_TOKEN environment variable is set
+    if not os.environ.get("KIE_API_TOKEN"):
+        print("Warning: KIE_API_TOKEN environment variable not set")
+        raise ValueError("KIE_API_TOKEN environment variable not set")
     
     # Check if OPENROUTER_API_KEY environment variable is set
     if not os.environ.get("OPENROUTER_API_KEY"):
         print("Warning: OPENROUTER_API_KEY environment variable not set")
+        raise ValueError("OPENROUTER_API_KEY environment variable not set")
     
     asyncio.run(main())
