@@ -43,4 +43,6 @@ cd video-ads-generation/
 # Follow the README instructions in each project
 ```
 
+---
+
 **⭐ If these projects help you create amazing AI videos, please give this repo a star!**
