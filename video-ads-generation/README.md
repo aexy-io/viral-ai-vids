@@ -1,6 +1,6 @@
 # 🎬 AI Video Ads Generator
 
-### 👉 **READ MORE: [Create Viral AI Marketing Ads for Almost Nothing with VEO3]()**  
+### 👉 **READ MORE: [Create Viral AI Marketing Ads for Almost Nothing with VEO3](https://dev.to/kaymen99/create-viral-ai-marketing-ads-for-almost-nothing-with-veo3-3o35)**  
 
 ### 🚀 **Want to try it out?** Test the live demo [VEO3 Ads Generator](https://veo3-ads-generator.streamlit.app/)
 
