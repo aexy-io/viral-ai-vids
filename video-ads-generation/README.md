@@ -2,9 +2,13 @@
 
 ### 👉 **READ MORE: [Create Viral AI Marketing Ads for Almost Nothing with VEO3]()**  
 
+### 🚀 **Want to try it out?** Test the live demo [VEO3 Ads Generator](https://veo3-ads-generator.streamlit.app/)
+
 A complete system for generating professional marketing videos using Google's VEO3 model. Create viral-quality ads for any brand or product in seconds, with a user-friendly Streamlit interface and curated prompt library.
 
-**Generate professional marketing videos like these viral VEO3 ads taking over Twitter! 🚀**
+▶️ **See the ad I generated in seconds** for *“Mercedes F1 Car Launch”* — made entirely with VEO3. You won’t believe it’s AI:
+
+[![VEO3 Ads Generator](https://github.com/user-attachments/assets/68e00228-b782-4e7f-b104-88c4ddd6f159)](https://www.youtube.com/watch?v=jodrXBd4DRo)
 
 ## Features
 
