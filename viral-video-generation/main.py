@@ -2,7 +2,7 @@ import os
 import asyncio
 from dotenv import load_dotenv
 from pydantic import BaseModel
-from video_gen import start_video_generation, wait_for_completion
+from video_gen import start_video_generation
 from utils import log_to_excel, ainvoke_llm, get_current_date
 from prompts import GENERATE_IDEAS_PROMPT, GENERATE_VIDEO_SCRIPT_PROMPT
 
@@ -59,7 +59,7 @@ async def generate_veo3_video_prompt(idea: str, environment: str):
 
 async def run_workflow(topic: str, count: int = 1):
     """
-    Run the complete workflow from idea generation to video creation.
+    Run the complete workflow from idea generation to storyboard creation.
     """
     try:
         # Step 1: Generate idea
@@ -76,7 +76,9 @@ async def run_workflow(topic: str, count: int = 1):
                 'prompt': "",
                 'status': "in_progress",
                 'created_at': get_current_date(),
-                'video_url': None
+                'video_url': "",
+                'gemini_output': "",
+                'error': ""
             }
         
             # Step 2: Generate V3 prompt
@@ -87,35 +89,21 @@ async def run_workflow(topic: str, count: int = 1):
             row_index = log_to_excel(log_entry)
             print(f"Log entry created with index: {row_index}")
             
-            # Step 3: Submit to kie.ai
-            taskid = start_video_generation(prompt)
-            
-            if not taskid:
+            # Step 3: Submit to Gemini for storyboard generation
+            generation_result = start_video_generation(prompt)
+
+            if generation_result.get("status") != "completed":
                 log_entry['status'] = "failed"
-                log_entry['error'] = "Failed to get request ID"
-                # Update the existing row with error information
+                log_entry['error'] = generation_result.get("error", "Unknown error")
                 log_to_excel(log_entry, row_index)
                 return None
+
+            storyboard_text = generation_result.get("response", {}).get("text", "")
+            log_entry['status'] = "completed"
+            log_entry['gemini_output'] = storyboard_text
+            print(f"Gemini output generated (truncated): {storyboard_text[:120]}...")
             
-            log_entry['task_id'] = taskid
-            
-            # Update the log with request ID
-            log_to_excel(log_entry, row_index)
-            
-            # Step 4: Wait for completion
-            result = wait_for_completion(taskid)
-            
-            # Step 5: Update status and log results
-            if result.get("status") == "failed":
-                log_entry['status'] = "failed"
-                log_entry['error'] = result.get("error", "Unknown error")
-            else:
-                log_entry['status'] = "completed"
-                video_url = result.get("response", {}).get("resultUrls", [])
-                log_entry['video_url'] = video_url[0] if video_url else ""
-                print(f"Video URL: {video_url}")
-            
-            # Step 6: Update the Excel log with final results
+            # Step 4: Update the Excel log with final results
             log_to_excel(log_entry, row_index)
     except Exception as e:
         print(f"Error in workflow: {str(e)}")
@@ -126,7 +114,7 @@ async def main():
     # You can configure this to run on a schedule
     topic = "meteorologist woman chasing tornado live on air"  # Example topic
     
-    # Number of ideas/videos to generate
+    # Number of ideas/storyboards to generate
     count = 1
     
     # Run main function
@@ -137,10 +125,14 @@ if __name__ == "__main__":
     # Load environment variables from .env file
     load_dotenv()
     
-    # Check if KIE_API_TOKEN environment variable is set
-    if not os.environ.get("KIE_API_TOKEN"):
-        print("Warning: KIE_API_TOKEN environment variable not set")
-        raise ValueError("KIE_API_TOKEN environment variable not set")
+    # Check if Gemini API key environment variable is set
+    if not (
+        os.environ.get("GEMINI_API_KEY")
+        or os.environ.get("KIE_API_TOKEN")
+        or os.environ.get("KIE_API_KEY")
+    ):
+        print("Warning: GEMINI_API_KEY (or legacy KIE_API_TOKEN) environment variable not set")
+        raise ValueError("GEMINI_API_KEY environment variable not set")
     
     # Check if OPENROUTER_API_KEY environment variable is set
     if not os.environ.get("OPENROUTER_API_KEY"):

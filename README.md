@@ -17,10 +17,10 @@ Modern AI video creation with VEO3 delivers:
 **Create professional marketing videos with AI-powered prompt library**
 
 **Key Features:**
-- **Streamlit web application** for easy video generation
+- **Streamlit web application** for easy storyboard generation
 - **Curated AI prompts** from successful viral marketing campaigns
-- **Professional quality** marketing videos for brands and products
-- **Ultra-low cost**: Under $0.60 per marketing video using VEO3
+- **Gemini-powered storyboards** ready to feed into VEO3, Runway, or Pika
+- **Ultra-fast**: Instant JSON scenes that guide your preferred video renderer
 - **Detailed Guide**: [I Built an AI Marketing Ads Generator with VEO3 That Creates Videos in Minutes](https://dev.to/kaymen99/create-viral-ai-marketing-ads-for-almost-nothing-with-veo3-3o35)
 - **Live Demo**: [Try AI Video Ads Generator](https://veo3-ads-generator.streamlit.app/)
 
@@ -31,10 +31,10 @@ Modern AI video creation with VEO3 delivers:
 
 **Key Features:**
 - **AI-powered automation** for viral content ideation
-- **Topic-to-video transformation** using advanced AI agents  
-- **VEO3-optimized prompts** for maximum viral potential
+- **Topic-to-storyboard transformation** using advanced AI agents  
+- **VEO3-optimized prompts** delivered as Gemini JSON storyboards
 - **Batch processing** with Excel logging and tracking
-- **Affordable pricing**: ~$0.32 per 8-second viral video via Kie.ai
+- **Flexible rendering**: Plug outputs into any video generator you already use
 - **Detailed Guide**: [Turn Any Topic Into Viral AI Videos Tutorial](https://dev.to/kaymen99/turn-any-topic-into-viral-ai-videos-using-googles-veo3-model-c03)
 
 **Perfect for:** Social media managers, TikTok creators, Instagram influencers, YouTube content creators, and viral marketing specialists.

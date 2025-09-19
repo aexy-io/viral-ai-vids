@@ -1,131 +1,138 @@
 import os
-import time
-import json
+from typing import Any, Dict, Optional
+
 import requests
 
 
-def start_video_generation(prompt: str, aspect_ratio: str, model: str):
-    """
-    Submit the prompt to Kie AI's VEO3 model.
-    Returns the task ID for tracking the generation job.
-    """
+DEFAULT_GEMINI_MODEL = "gemini-1.5-flash"
+
+
+def _get_api_key() -> Optional[str]:
+    """Return the configured Gemini API key with backwards compatibility."""
+    return (
+        os.getenv("GEMINI_API_KEY")
+        or os.getenv("KIE_API_TOKEN")
+        or os.getenv("KIE_API_KEY")
+    )
+
+
+def _normalise_model(model: Optional[str]) -> str:
+    """Map legacy model names to Gemini equivalents."""
+    if not model:
+        return DEFAULT_GEMINI_MODEL
+
+    mapping = {
+        "veo3_fast": "gemini-1.5-flash",
+        "veo3": "gemini-1.5-pro",
+    }
+    return mapping.get(model, model)
+
+
+def start_video_generation(prompt: str, aspect_ratio: str, model: Optional[str] = None) -> Dict[str, Any]:
+    """Generate a video storyboard using Gemini."""
+    api_key = _get_api_key()
+    if not api_key:
+        return {
+            "status": "failed",
+            "error": "Missing Gemini API key. Set GEMINI_API_KEY or KIE_API_TOKEN.",
+        }
+
+    target_model = _normalise_model(model)
+    endpoint = f"https://generativelanguage.googleapis.com/v1beta/models/{target_model}:generateContent"
+
+    system_instruction = (
+        "You are an award-winning video director. Given a creative brief, craft a detailed "
+        "storyboard for an AI-generated marketing video. Include shot structure, camera "
+        "movement, visual details, and narration so another model can later render the video."
+    )
+
+    user_prompt = (
+        "Create a cinematic marketing video plan using the following prompt inspiration.\n\n"
+        f"Aspect ratio: {aspect_ratio}\n"
+        "Deliver the response as JSON with the following schema:\n"
+        "{\n"
+        "  \"overview\": \"Short summary of the video concept\",\n"
+        "  \"shots\": [\n"
+        "    {\n"
+        "      \"timestamp\": \"0s-2s\",\n"
+        "      \"visuals\": \"Visual description\",\n"
+        "      \"camera\": \"Camera movements or lens notes\",\n"
+        "      \"narration\": \"On-screen text or voiceover\"\n"
+        "    }\n"
+        "  ],\n"
+        "  \"call_to_action\": \"Closing message\"\n"
+        "}\n\n"
+        "Prompt inspiration:\n"
+        f"{prompt}"
+    )
+
+    payload: Dict[str, Any] = {
+        "systemInstruction": {
+            "role": "system",
+            "parts": [{"text": system_instruction}],
+        },
+        "contents": [
+            {
+                "role": "user",
+                "parts": [{"text": user_prompt}],
+            }
+        ],
+        "generationConfig": {
+            "temperature": 0.7,
+            "topP": 0.95,
+            "topK": 40,
+            "maxOutputTokens": 2048,
+        },
+    }
+
     try:
-        # Prepare the payload for VEO3
-        payload = {
-            "prompt": prompt,
-            "model": model,
-            "aspectRatio": aspect_ratio
+        response = requests.post(
+            endpoint,
+            params={"key": api_key},
+            json=payload,
+            timeout=60,
+        )
+    except requests.RequestException as exc:
+        return {
+            "status": "failed",
+            "error": f"Gemini request failed: {exc}",
         }
-            
-        # Convert payload to JSON
-        payload_json = json.dumps(payload)
-        
-        # Set up headers with API token
-        headers = {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': f'Bearer {os.getenv("KIE_API_TOKEN")}'
+
+    if response.status_code != 200:
+        return {
+            "status": "failed",
+            "error": f"Gemini API error {response.status_code}",
+            "details": response.text,
         }
-        
-        # Make the API request
-        url = f"https://api.kie.ai/api/v1/veo/generate"
-        response = requests.post(url, headers=headers, data=payload_json)
-        print(response.json())
-        
-        # Extract task ID from the response
-        if response.status_code == 200:
-            data = response.json()
-            if "taskId" in data.get("data", {}):
-                task_id = data["data"]["taskId"]
-                print(f"Successfully submitted to Kie AI. Task ID: {task_id}")
-                return task_id
-        
-        print(f"Error submitting to Kie AI: {response.text}")
-        return None
-    
-    except Exception as e:
-        print(f"Error submitting to Kie AI: {str(e)}")
-        return None
 
-
-def get_video_status(task_id: str):
-    """
-    Check the status of a video generation job using Kie AI API.
-    """
-    try:
-        # Set up headers with API token
-        headers = {
-            'Accept': 'application/json',
-            'Authorization': f'Bearer {os.getenv("KIE_API_TOKEN")}'
+    data = response.json()
+    text_response = _extract_text_from_response(data)
+    if not text_response:
+        return {
+            "status": "failed",
+            "error": "Gemini response did not include any text output.",
+            "details": data,
         }
-        
-        # Make the API request
-        url = f"https://api.kie.ai/api/v1/veo/record-info?taskId={task_id}"
-        response = requests.get(url, headers=headers)
-        
-        # Process the response
-        if response.status_code == 200:
-            data = response.json()
-            
-            # Extract status information
-            if "data" in data:
-                result_data = data["data"]
-                success_flag = result_data.get("successFlag")
-                
-                # Map Kie AI status codes to standard format
-                if success_flag == 0:
-                    return {"status": "in_progress", "task_id": task_id}
-                elif success_flag == 1:
-                    return {
-                        "status": "completed",
-                        "task_id": task_id,
-                        "response": result_data.get("response", {})
-                    }
-                elif success_flag in [2, 3]:
-                    error_msg = result_data.get("errorMessage", "Unknown error")
-                    return {
-                        "status": "failed",
-                        "task_id": task_id,
-                        "error": error_msg
-                    }
-            
-            # If we can't determine the status, return the raw data
-            return {"status": "unknown", "raw_data": data}
-        else:
-            return {"status": "error", "error": f"API error: {response.status_code}", "details": response.text}
-    
-    except Exception as e:
-        print(f"Error checking Kie AI status: {str(e)}")
-        return {"error": str(e), "status": "failed"}
+
+    return {
+        "status": "completed",
+        "response": {
+            "text": text_response,
+            "raw": data,
+        },
+    }
 
 
-def wait_for_completion(task_id: str, timeout_minutes: int = 10):
-    """
-    Wait for the video generation to complete using Kie AI API
-    """
-    print(f"Waiting for Kie AI video generation to complete (timeout: {timeout_minutes} minutes)...")
-    
-    start_time = time.time()
-    timeout_seconds = timeout_minutes * 60
-    
-    while True:
-        # Check if we've exceeded the timeout
-        elapsed = time.time() - start_time
-        if elapsed > timeout_seconds:
-            print(f"Timeout reached after {elapsed:.1f} seconds")
-            return {"error": "Timeout reached", "status": "timeout"}
-        
-        # Get the current status
-        result = get_video_status(task_id)
-        status = result.get("status", "").lower()
-        
-        # If completed or error, return the result
-        if status == "completed":
-            print(f"Kie AI video generation completed successfully")
-            return result
-        elif status == "failed":
-            print(f"Kie AI video generation failed: {result.get('error')}")
-            return result
-        
-        # Wait before checking again (adjust as needed)
-        time.sleep(30)
+def _extract_text_from_response(data: Dict[str, Any]) -> str:
+    candidates = data.get("candidates", [])
+    for candidate in candidates:
+        content = candidate.get("content", {})
+        parts = content.get("parts", [])
+        lines = []
+        for part in parts:
+            text = part.get("text")
+            if text:
+                lines.append(text)
+        if lines:
+            return "\n".join(lines).strip()
+    return ""

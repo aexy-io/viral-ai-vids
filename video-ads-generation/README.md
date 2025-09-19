@@ -4,7 +4,7 @@
 
 ### 🚀 **Want to try it out?** Test the live demo [VEO3 Ads Generator](https://veo3-ads-generator.streamlit.app/)
 
-A complete system for generating professional marketing videos using Google's VEO3 model. Create viral-quality ads for any brand or product in seconds, with a user-friendly Streamlit interface and curated prompt library.
+A complete system for generating professional marketing video storyboards using Google Gemini. Craft viral-quality scene plans for any brand or product in seconds, with a user-friendly Streamlit interface and curated prompt library ready for tools like VEO3, Runway, or Pika.
 
 ▶️ **See the ad I generated in seconds** for *“Mercedes F1 Car Launch”* — made entirely with VEO3. You won’t believe it’s AI:
 
@@ -15,9 +15,9 @@ A complete system for generating professional marketing videos using Google's VE
 - **🎨 Curated Prompt Library**: Collection of high-performing VEO3 prompts from viral Twitter ads (IKEA, Tesla, Nike, Jeep, etc.)
 - **🤖 AI-Powered Prompt Generation**: Uses GPT-4 to transform your brand ideas using inspiration from the prompt library
 - **📱 Streamlit Web Interface**: User-friendly app for non-technical users with API key management
-- **⚙️ Flexible Configuration**: Choose VEO3 model (fast/quality), aspect ratio (16:9/9:16), and prompt inspiration
-- **📊 Excel Logging**: Automatic tracking of all generated videos, prompts, and metadata
-- **💰 Cost-Effective**: Generate professional marketing videos for under $0.60 each via Kie.ai
+- **⚙️ Flexible Configuration**: Choose Gemini model (flash/pro), aspect ratio guidance (16:9/9:16), and prompt inspiration
+- **📊 Excel Logging**: Automatic tracking of generated prompts, Gemini storyboards, and metadata
+- **💰 Cost-Effective**: Generate professional marketing storyboards instantly with Gemini
 - **🔧 Developer-Friendly**: Complete Python codebase with LangChain integration for multiple LLM providers
 
 ## How It Works
@@ -25,16 +25,16 @@ A complete system for generating professional marketing videos using Google's VE
 ### 📱 Streamlit Web App (Recommended)
 1. **Enter your video idea** (e.g., "Mercedes luxury car ad showing performance")
 2. **Select prompt inspiration** from the curated library (IKEA, Tesla, Nike, etc.)
-3. **Choose settings**: VEO3 model (fast/quality) and aspect ratio (16:9/9:16)
+3. **Choose settings**: Gemini model (flash/pro) and aspect ratio (16:9/9:16)
 4. **AI generates optimized prompt** using GPT-4 based on your idea and selected inspiration
-5. **Video generation** via Kie.ai API (typically takes 2-5 minutes)
-6. **Download and view** your professional marketing video
+5. **Storyboard generation** via Google Gemini (JSON formatted scene plan)
+6. **Copy the storyboard** into your preferred video generation service to render the final video
 
 ### 💻 Command Line (For Developers)
 1. **Configure your brand idea** in `main.py`
 2. **Select inspiration prompt** from the prompt library
 3. **Run the workflow**: `python main.py`
-4. **All results saved** to Excel file with video URLs and metadata 
+4. **All results saved** to Excel file with prompts, storyboards, and metadata 
 
 ## Use Cases
 
@@ -52,7 +52,7 @@ A complete system for generating professional marketing videos using Google's VE
 ### Prerequisites
 
 - Python 3.12 or higher
-- Create an account on [Kie.ai](https://kie.ai) and get your API key
+- Create an API key for [Google Gemini](https://ai.google.dev/) (used for storyboard generation)
 - [OpenRouter API key](https://openrouter.ai/) (to use any LLM model) or you preferred LLM API key, like OpenAI or Claude
 
 ### Project Structure
@@ -62,7 +62,7 @@ A complete system for generating professional marketing videos using Google's VE
 ├── main.py              # Command-line workflow for developers
 ├── prompts.py           # Curated VEO3 prompt library from viral Twitter ads
 ├── prompt_library.py    # Prompt metadata and library management
-├── video_gen.py         # Kie.ai API integration for VEO3 access
+├── video_gen.py         # Gemini API integration for storyboard generation
 ├── utils.py             # Utility functions for LLM calls and Excel logging
 ├── requirements.txt     # Project dependencies
 ├── .env                 # Environment variables (API keys, etc.)
@@ -90,7 +90,7 @@ pip install -r requirements.txt
 
 4. Create a `.env` file in the root directory with your API keys:
 ```
-KIE_API_TOKEN=your_kie_ai_key_here
+GEMINI_API_KEY=your_gemini_key_here
 OPENROUTER_API_KEY=your_openrouter_key_here  # For LLM access
 ```
 
@@ -107,9 +107,9 @@ streamlit run streamlit_app.py
    - Add your API keys in the sidebar
    - Enter your video idea (e.g., "Mercedes luxury car commercial")
    - Select prompt inspiration from the library
-   - Choose VEO3 model and aspect ratio
-   - Click "Generate Video"
-   - Download your professional marketing video!
+   - Choose Gemini model and aspect ratio guidance
+   - Click "Generate Storyboard"
+   - Copy the storyboard JSON into your preferred video generation tool (e.g., VEO3)
 
 ### 💻 Option 2: Command Line (For Developers)
 
@@ -121,7 +121,7 @@ async def main():
         "ad_idea": "Your brand/product idea here",
         "inspiration_prompt": selected_prompt['prompt'],  # From prompt library
         "aspect_ratio": "16:9",  # or "9:16"
-        "model": "veo3_fast"  # or "veo3"
+        "model": "gemini-1.5-flash"  # or "gemini-1.5-pro"
     }
     result = await run_workflow(inputs)
 ```
@@ -131,16 +131,15 @@ async def main():
 python main.py
 ```
 
-3. Check the generated Excel file (`ad_videos.xlsx`) for video URLs and metadata.
+3. Check the generated Excel file (`ad_videos.xlsx`) for prompts, storyboards, and metadata.
 
 
 ## 💰 Pricing & Notes
 
-- **VEO3 Fast**: ~$0.40 per 8-second video (recommended for testing)
-- **VEO3 Quality**: ~$2.00 per 8-second video (higher quality)
-- **GPT-4.1 for prompt generation**: ~$0.02 per request
-- **Total cost per video**: Under $0.60 for professional marketing content
-- **Video length**: Currently limited to 8 seconds (this will expand in future VEO3 versions)
+- **Gemini Storyboard Generation**: Included with your Google AI Studio usage (text tokens only)
+- **Prompt Generation (GPT-4.1)**: ~$0.02 per request via OpenRouter (configurable)
+- **Video Rendering**: Bring your own video generator (e.g., VEO3, Pika, Runway). Costs depend on your chosen tool.
+- **Tip**: Use the JSON storyboard to drive scene-by-scene prompts in your preferred video service.
 
 ## 🚀 What Makes This Special
 
@@ -152,7 +151,7 @@ python main.py
 
 ## 🔗 Links
 
-- **Kie.ai**: [Best platform for VEO3 access](https://kie.ai)
+- **Google Gemini**: [Official documentation](https://ai.google.dev/)
 - **OpenRouter**: [Multi-LLM API access](https://openrouter.ai)
 
 ## **Contact**

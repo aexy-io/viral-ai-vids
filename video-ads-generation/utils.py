@@ -45,13 +45,19 @@ def log_to_excel(data, row_index=None):
     If row_index is provided, updates an existing row instead of creating a new one.
     Returns the DataFrame index of the entry (new or updated).
     """
+    expected_columns = [
+        'title', 'prompt',
+        'status', 'task_id', 'video_url', 'gemini_output', 'error', 'created_at'
+    ]
+
     if os.path.exists(EXCEL_LOG_FILE):
         df = pd.read_excel(EXCEL_LOG_FILE)
+        # Ensure all expected columns are present for backwards compatibility
+        for column in expected_columns:
+            if column not in df.columns:
+                df[column] = ""
     else:
-        df = pd.DataFrame(columns=[
-            'title', 'prompt',
-            'status', 'task_id', 'video_url', 'error', 'created_at'
-        ])
+        df = pd.DataFrame(columns=expected_columns)
     
     if row_index is not None and 0 <= row_index < len(df):
         # Update existing row

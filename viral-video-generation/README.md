@@ -2,7 +2,7 @@
 
 ### 👉 **READ MORE [Turn Any Topic Into Viral AI Videos Using Google's VEO3 Model!](https://dev.to/kaymen99/turn-any-topic-into-viral-ai-videos-using-googles-veo3-model-c03)**  
 
-An AI automation tool that generates viral-worthy videos using Google's VEO3 model. This project allows you to automatically create high-quality, realistic AI videos from any topic.
+An AI automation tool that generates viral-worthy video storyboards using Google Gemini. The JSON plans plug straight into video generators like Google's VEO3, Runway, or Pika so you can render high-quality clips from any topic.
 
 **Check this meteorologist chasing a tornado short that I made 🚀**
 
@@ -10,20 +10,20 @@ https://github.com/user-attachments/assets/5521331c-a2ea-4f27-bd3a-f5a6a697be89
 
 ## Features
 
-- **Topic-to-Video Pipeline**: Convert any topic into multiple creative video ideas with a single command
+- **Topic-to-Storyboard Pipeline**: Convert any topic into multiple creative video ideas with a single command
 - **AI Idea Generation**: Uses **GPT-4.1-mini** to create viral-worthy video ideas with catchy captions
 - **VEO3-Optimized Prompt Engineering**: Automatically crafts perfectly formatted prompts for Google's VEO3 model
-- **Kie.ai Integration**: We use **Kie.ai API** to access Google's VEO3 without expensive subscriptions
-- **Automated Runs**: can automate the process and log all video links to an Excel file
+- **Gemini Storyboard Generation**: We use **Google Gemini API** to turn prompts into JSON storyboards you can feed into video tools
+- **Automated Runs**: can automate the process and log all storyboard outputs to an Excel file
 
 ## How It Works
 
 1. **Enter a topic** in the script (e.g., "Alien food critic reviewing Earth cuisine")
 2. **First AI agent will generate creative ideas** with captions and the necessary video environment context
 3. **A second AI agent will create VEO3-optimized prompts** including main character description, conversation, background, etc 
-4. **We use Kie.ai API** to access the Google VEO3 model and we provide the generated prompts for video generation
-5. **Scripts will wait for video processing** (typically takes 2-5 minutes)
-6. At the end, **all generated videos URLs** will be saved to a local Excel file 
+4. **We use Google Gemini** to transform each prompt into a structured storyboard (JSON)
+5. **Storyboards are logged instantly** so you can feed them into VEO3, Pika, or your preferred renderer
+6. At the end, **all storyboard outputs** will be saved to a local Excel file 
 
 ## Use Cases
 
@@ -39,7 +39,7 @@ https://github.com/user-attachments/assets/5521331c-a2ea-4f27-bd3a-f5a6a697be89
 ### Prerequisites
 
 - Python 3.12 or higher
-- Create an account on [Kie.ai](https://kie.ai) and get your API key
+- Create a [Google Gemini](https://ai.google.dev/) API key for storyboard generation
 - [OpenRouter API key](https://openrouter.ai/) (to use any LLM model) or you preferred LLM API key, like OpenAI or Claude
 
 ### Project Structure
@@ -50,7 +50,7 @@ https://github.com/user-attachments/assets/5521331c-a2ea-4f27-bd3a-f5a6a697be89
 ├── utils.py          # Utility functions for API calls and data handling
 ├── requirements.txt  # Project dependencies
 ├── .env              # Environment variables (API keys, etc.)
-└── videos.xlsx       # Generated Excel file with video metadata and URLs
+└── videos.xlsx       # Generated Excel file with prompts, storyboards, and metadata
 ```
 
 ### Setup
@@ -74,13 +74,13 @@ pip install -r requirements.txt
 
 4. Create a `.env` file in the root directory with your API keys:
 ```
-KIE_API_KEY=your_kie_ai_key_here
+GEMINI_API_KEY=your_gemini_key_here
 OPENROUTER_API_KEY=your_openrouter_key_here  # For LLM access
 ```
 
 ## Usage
 
-1. Choose the topic of your videos and number of videos to generate in `main.py`:
+1. Choose the topic of your storyboards and number of outputs to generate in `main.py`:
 
 ```python
 async def main():
@@ -96,13 +96,13 @@ async def main():
 python main.py
 ```
 
-3. Check the generated Excel file (`videos.xlsx`) for video URLs and details.
+3. Check the generated Excel file (`videos.xlsx`) for prompts, storyboards, and details.
 
 
 ## Notes
 
-- **Google's VEO3 model via Kie.ai currently costs approximately $0.04 per second of video generated**
-- **Videos are currently limited to 8 seconds in length**
+- **Gemini usage**: Storyboard generation consumes text tokens only; monitor usage in Google AI Studio
+- **Rendering**: Use the exported JSON structure with VEO3, Runway, Pika, etc., to handle video rendering and associated costs
 
 ## **Contact**
 

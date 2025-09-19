@@ -2,7 +2,7 @@ import os
 import asyncio
 from dotenv import load_dotenv
 from typing import Annotated, TypedDict
-from video_gen import start_video_generation, wait_for_completion
+from video_gen import start_video_generation
 from utils import log_to_excel, ainvoke_llm, get_current_date
 from prompt_library import PROMPT_LIBRARY
 
@@ -56,7 +56,9 @@ async def run_workflow(inputs):
             'prompt': "",
             'status': "in_progress",
             'created_at': get_current_date(),
-            'video_url': None
+            'video_url': "",
+            'gemini_output': "",
+            'error': ""
         }
     
         # Generate V3 prompt
@@ -68,44 +70,33 @@ async def run_workflow(inputs):
         row_index = log_to_excel(log_entry)
         print(f"Log entry created with index: {row_index}")
         
-        # Submit to kie.ai
-        taskid = start_video_generation(
+        # Submit to Gemini LLM
+        generation_result = start_video_generation(
             video_details['prompt'],
             inputs['aspect_ratio'],
             inputs['model']
         )
-        if not taskid:
+
+        if generation_result.get("status") != "completed":
             log_entry['status'] = "failed"
-            log_entry['error'] = "Failed to get request ID"
+            log_entry['error'] = generation_result.get("error", "Unknown error")
+            log_entry['gemini_output'] = ""
             # Update the existing row with error information
             log_to_excel(log_entry, row_index)
             return None
-        
-        log_entry['task_id'] = taskid
-        
-        # Update the log with request ID
-        log_to_excel(log_entry, row_index)
-        
-        # Wait for completion
-        result = wait_for_completion(taskid)
-            
-        # Update status and log results
-        if result.get("status") == "failed":
-            log_entry['status'] = "failed"
-            log_entry['error'] = result.get("error", "Unknown error")
-        else:
-            log_entry['status'] = "completed"
-            video_url = result.get("response", {}).get("resultUrls", [])
-            log_entry['video_url'] = video_url[0] if video_url else ""
-            print(f"Video URL: {video_url}")
-        
+
+        response_text = generation_result.get("response", {}).get("text", "")
+        log_entry['status'] = "completed"
+        log_entry['gemini_output'] = response_text
+        print(f"Gemini output generated (truncated): {response_text[:120]}...")
+
         # Update the Excel log with final results
         log_to_excel(log_entry, row_index)
-        
+
         return {
             "title": log_entry['title'],
             "prompt": log_entry['prompt'],
-            "video_url": log_entry['video_url']
+            "gemini_output": response_text
         }
     except Exception as e:
         print(f"Error in workflow: {str(e)}")
@@ -116,10 +107,14 @@ if __name__ == "__main__":
     # Load environment variables from .env file
     load_dotenv()
     
-    # Check if KIE_API_TOKEN environment variable is set
-    if not os.environ.get("KIE_API_TOKEN"):
-        print("Warning: KIE_API_TOKEN environment variable not set")
-        raise ValueError("KIE_API_TOKEN environment variable not set")
+    # Check if Gemini API key environment variable is set
+    if not (
+        os.environ.get("GEMINI_API_KEY")
+        or os.environ.get("KIE_API_TOKEN")
+        or os.environ.get("KIE_API_KEY")
+    ):
+        print("Warning: GEMINI_API_KEY (or legacy KIE_API_TOKEN) environment variable not set")
+        raise ValueError("GEMINI_API_KEY environment variable not set")
     
     # Check if OPENROUTER_API_KEY environment variable is set
     if not os.environ.get("OPENROUTER_API_KEY"):
@@ -137,6 +132,6 @@ if __name__ == "__main__":
         "ad_idea": ad_idea,
         "inspiration_prompt": inspiration_prompt,
         "aspect_ratio": "16:9", # or "9:16",
-        "model": "veo3_fast" # Cheaper "veo3_fast" or high quality "veo3"
+        "model": "gemini-1.5-flash" # Or choose "gemini-1.5-pro" for more detailed plans
     }
     asyncio.run(run_workflow(inputs))
