@@ -11,7 +11,7 @@ https://github.com/user-attachments/assets/5521331c-a2ea-4f27-bd3a-f5a6a697be89
 ## Features
 
 - **Topic-to-Storyboard Pipeline**: Convert any topic into multiple creative video ideas with a single command
-- **AI Idea Generation**: Uses **GPT-4.1-mini** to create viral-worthy video ideas with catchy captions
+- **AI Idea Generation**: Uses **Google Gemini** to create viral-worthy video ideas with catchy captions
 - **VEO3-Optimized Prompt Engineering**: Automatically crafts perfectly formatted prompts for Google's VEO3 model
 - **Gemini Storyboard Generation**: We use **Google Gemini API** to turn prompts into JSON storyboards you can feed into video tools
 - **Automated Runs**: can automate the process and log all storyboard outputs to an Excel file
@@ -40,7 +40,6 @@ https://github.com/user-attachments/assets/5521331c-a2ea-4f27-bd3a-f5a6a697be89
 
 - Python 3.12 or higher
 - Create a [Google Gemini](https://ai.google.dev/) API key for storyboard generation
-- [OpenRouter API key](https://openrouter.ai/) (to use any LLM model) or you preferred LLM API key, like OpenAI or Claude
 
 ### Project Structure
 
@@ -72,10 +71,9 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-4. Create a `.env` file in the root directory with your API keys:
+4. Create a `.env` file in the root directory with your API key:
 ```
 GEMINI_API_KEY=your_gemini_key_here
-OPENROUTER_API_KEY=your_openrouter_key_here  # For LLM access
 ```
 
 ## Usage

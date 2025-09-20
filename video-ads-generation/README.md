@@ -13,12 +13,12 @@ A complete system for generating professional marketing video storyboards using 
 ## Features
 
 - **🎨 Curated Prompt Library**: Collection of high-performing VEO3 prompts from viral Twitter ads (IKEA, Tesla, Nike, Jeep, etc.)
-- **🤖 AI-Powered Prompt Generation**: Uses GPT-4 to transform your brand ideas using inspiration from the prompt library
+- **🤖 AI-Powered Prompt Generation**: Uses Google Gemini to transform your brand ideas using inspiration from the prompt library
 - **📱 Streamlit Web Interface**: User-friendly app for non-technical users with API key management
 - **⚙️ Flexible Configuration**: Choose Gemini model (flash/pro), aspect ratio guidance (16:9/9:16), and prompt inspiration
 - **📊 Excel Logging**: Automatic tracking of generated prompts, Gemini storyboards, and metadata
 - **💰 Cost-Effective**: Generate professional marketing storyboards instantly with Gemini
-- **🔧 Developer-Friendly**: Complete Python codebase with LangChain integration for multiple LLM providers
+- **🔧 Developer-Friendly**: Clean Python codebase using the Gemini API directly with no third-party abstractions
 
 ## How It Works
 
@@ -26,7 +26,7 @@ A complete system for generating professional marketing video storyboards using 
 1. **Enter your video idea** (e.g., "Mercedes luxury car ad showing performance")
 2. **Select prompt inspiration** from the curated library (IKEA, Tesla, Nike, etc.)
 3. **Choose settings**: Gemini model (flash/pro) and aspect ratio (16:9/9:16)
-4. **AI generates optimized prompt** using GPT-4 based on your idea and selected inspiration
+4. **AI generates optimized prompt** using Gemini based on your idea and selected inspiration
 5. **Storyboard generation** via Google Gemini (JSON formatted scene plan)
 6. **Copy the storyboard** into your preferred video generation service to render the final video
 
@@ -52,8 +52,7 @@ A complete system for generating professional marketing video storyboards using 
 ### Prerequisites
 
 - Python 3.12 or higher
-- Create an API key for [Google Gemini](https://ai.google.dev/) (used for storyboard generation)
-- [OpenRouter API key](https://openrouter.ai/) (to use any LLM model) or you preferred LLM API key, like OpenAI or Claude
+- Create an API key for [Google Gemini](https://ai.google.dev/)
 
 ### Project Structure
 
@@ -88,10 +87,9 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-4. Create a `.env` file in the root directory with your API keys:
+4. Create a `.env` file in the root directory with your API key:
 ```
 GEMINI_API_KEY=your_gemini_key_here
-OPENROUTER_API_KEY=your_openrouter_key_here  # For LLM access
 ```
 
 ## Usage
@@ -136,8 +134,7 @@ python main.py
 
 ## 💰 Pricing & Notes
 
-- **Gemini Storyboard Generation**: Included with your Google AI Studio usage (text tokens only)
-- **Prompt Generation (GPT-4.1)**: ~$0.02 per request via OpenRouter (configurable)
+- **Gemini Storyboard & Prompt Generation**: Included with your Google AI Studio usage (text tokens only)
 - **Video Rendering**: Bring your own video generator (e.g., VEO3, Pika, Runway). Costs depend on your chosen tool.
 - **Tip**: Use the JSON storyboard to drive scene-by-scene prompts in your preferred video service.
 
@@ -152,7 +149,6 @@ python main.py
 ## 🔗 Links
 
 - **Google Gemini**: [Official documentation](https://ai.google.dev/)
-- **OpenRouter**: [Multi-LLM API access](https://openrouter.ai)
 
 ## **Contact**
 

@@ -14,19 +14,16 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-def set_api_keys(gemini_key: str, openrouter_key: str):
+def set_api_keys(gemini_key: str):
     """Set API keys as environment variables"""
     if gemini_key:
         os.environ["GEMINI_API_KEY"] = gemini_key
         # Backwards compatibility for legacy environment variables
         os.environ["KIE_API_TOKEN"] = gemini_key
-    if openrouter_key:
-        os.environ["OPENROUTER_API_KEY"] = openrouter_key
 
 def validate_api_keys() -> bool:
     """Check if required API keys are set"""
-    has_gemini = bool(os.environ.get("GEMINI_API_KEY") or os.environ.get("KIE_API_TOKEN"))
-    return has_gemini and bool(os.environ.get("OPENROUTER_API_KEY"))
+    return bool(os.environ.get("GEMINI_API_KEY") or os.environ.get("KIE_API_TOKEN"))
 
 def display_storyboard(output_text: str, title: str):
     """Display the generated storyboard or plan from Gemini."""
@@ -55,18 +52,12 @@ def main():
             help="Your Google Gemini API key for storyboard generation"
         )
         
-        openrouter_key = st.text_input(
-            "OpenRouter API Key", 
-            type="password",
-            help="Your OpenRouter API key for GPT-4 access"
-        )
-        
-        if st.button("Save", type="primary"): 
-            set_api_keys(gemini_key, openrouter_key)
+        if st.button("Save", type="primary"):
+            set_api_keys(gemini_key)
             if validate_api_keys():
                 st.success("✅ API keys saved successfully!")
             else:
-                st.error("❌ Please provide both API keys")
+                st.error("❌ Please provide a Gemini API key")
 
     # Main content area
     st.title("🎬 AI Storyboard Generator")
@@ -74,7 +65,7 @@ def main():
 
     # Check if API keys are configured
     if not validate_api_keys():
-        st.warning("⚠️ Please configure your API keys in the sidebar before proceeding.")
+        st.warning("⚠️ Please configure your Gemini API key in the sidebar before proceeding.")
         st.stop()
 
     # Video idea input

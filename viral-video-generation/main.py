@@ -26,7 +26,7 @@ async def generate_video_ideas(topic: str, count: int = 1):
     
     # Use the AI invocation function with structured output
     result = await ainvoke_llm(
-        model="gpt-4.1-mini",
+        model="gemini-1.5-flash",
         system_prompt=GENERATE_IDEAS_PROMPT,
         user_message=user_message,
         response_format=IdeasList,
@@ -49,7 +49,7 @@ async def generate_veo3_video_prompt(idea: str, environment: str):
     
     # Use the AI invocation function
     result = await ainvoke_llm(
-        model="gpt-4.1-mini",
+        model="gemini-1.5-pro",
         system_prompt=GENERATE_VIDEO_SCRIPT_PROMPT,
         user_message=user_message,
         temperature=0.7
@@ -133,10 +133,5 @@ if __name__ == "__main__":
     ):
         print("Warning: GEMINI_API_KEY (or legacy KIE_API_TOKEN) environment variable not set")
         raise ValueError("GEMINI_API_KEY environment variable not set")
-    
-    # Check if OPENROUTER_API_KEY environment variable is set
-    if not os.environ.get("OPENROUTER_API_KEY"):
-        print("Warning: OPENROUTER_API_KEY environment variable not set")
-        raise ValueError("OPENROUTER_API_KEY environment variable not set")
     
     asyncio.run(main())
